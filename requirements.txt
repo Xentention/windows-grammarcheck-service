@@ -1,0 +1,23 @@
+# Dependencies for scripts/build_onnx_model.py (one-time ONNX export + quantization)
+# plus the app/ web service. Versions pinned together for mutual compatibility
+# (same vintage as transformers==4.42.4, verified against optimum's seq2seq
+# ORTQuantizer support).
+optimum[onnxruntime]==1.21.4
+transformers==4.42.4
+onnx==1.16.1
+onnxruntime==1.18.1
+
+# Web service (app/server.py, app/punctuation.py, app/onnx_model.py).
+flask==3.0.3
+waitress==3.0.0
+# CPU-only wheel installed explicitly in the Dockerfile via
+# --index-url https://download.pytorch.org/whl/cpu (avoids the multi-GB
+# CUDA-bundled default wheel, which is never used -- this image is CPU-only).
+# Pinned to the same version here so this line is a no-op for pip once that
+# step has already installed it.
+torch==2.3.1
+sentencepiece==0.2.0
+accelerate==0.31.0
+
+# Windows service wrapper (windows_service.py) -- skipped on Linux/Docker.
+pywin32==306; sys_platform == "win32"
