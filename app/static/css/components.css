@@ -259,6 +259,31 @@
   font-size: var(--field-font-size);
   line-height: var(--field-line-height);
   overflow-wrap: break-word;
+  white-space: pre-wrap;
+}
+
+
+.output-body:focus-visible {
+  outline-offset: -3px;
+}
+
+
+.read-output-btn {
+  background: var(--accent);
+  border: 0;
+  box-shadow: var(--shadow-primary);
+  color: var(--on-dark);
+}
+
+.read-output-btn:hover:not(:disabled) {
+  background: var(--accent-hover);
+  color: var(--on-dark);
+}
+
+.read-output-btn:disabled {
+  opacity: 1;
+  background: var(--disabled-bg);
+  box-shadow: none;
 }
 
 .elapsed-time {
@@ -278,13 +303,14 @@
   font-family: var(--font-heading);
   font-weight: 600;
   font-size: 22px;
-  margin: 0 0 10px;
+  margin: 0 0 15px;
 }
 
 .mv-gec-info-text {
   color: var(--text-muted-2);
-  font-size: 15px;
-  line-height: 1.7;
-  max-width: 62ch;
-  margin: 0;
+  font-family: var(--font-body);
+  font-size: var(--field-font-size);
+  line-height: var(--field-line-height);
+  overflow-wrap: break-word;
+  margin: 0 0 10px;
 }

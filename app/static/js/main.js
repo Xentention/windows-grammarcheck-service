@@ -1,5 +1,5 @@
 import { correctText } from './api.js';
-import { initAccessibility } from './accessibility.js';
+import { initAccessibility, announce } from './accessibility.js';
 
 const mainEl = document.querySelector('.app-main');
 const hcToggle = document.getElementById('hc-toggle');
@@ -19,6 +19,7 @@ const errorText = document.getElementById('error-text');
 const copyBtn = document.getElementById('copy-btn');
 const outputBody = document.getElementById('output-body');
 const elapsedTime = document.getElementById('elapsed-time');
+const readOutputBtn = document.getElementById('read-output-btn');
 
 let busy = false;
 let lastCorrectedText = '';
@@ -37,8 +38,10 @@ const renderOutput = (corrected) => {
   outputBody.textContent = corrected;
 };
 
-const setElapsedTime = (elapsedStr) => {
-  elapsedTime.textContent = `Время: ${elapsedStr}`;
+const setElapsedTime = (elapsedStr, noChange) => {
+  elapsedTime.textContent = noChange
+    ? `Время: ${elapsedStr} — без изменений`
+    : `Время: ${elapsedStr}`;
   elapsedTime.hidden = false;
 };
 
@@ -56,8 +59,6 @@ const onCorrect = async () => {
   setBusyUi(true);
   errorCard.hidden = true;
   errorText.textContent = '';
-  clearBtn.tabIndex = 0;
-  copyBtn.tabIndex = 0;
 
   try {
     const { corrected, elapsedStr } = await correctText(text);
@@ -66,7 +67,8 @@ const onCorrect = async () => {
     renderOutput(corrected);
     setElapsedTime(elapsedStr, noChange);
     copyBtn.disabled = false;
-    clearBtn.tabIndex = -1;
+    readOutputBtn.disabled = false;
+    announce('Результат готов.');
 
   } catch (err) {
     errorText.textContent = err.message;
@@ -85,9 +87,10 @@ const onClear = () => {
   elapsedTime.hidden = true;
   elapsedTime.textContent = '';
   copyBtn.disabled = true;
+  readOutputBtn.disabled = true;
+  window.speechSynthesis?.cancel();
+  setReadOutputLabel(false);
   lastCorrectedText = '';
-  clearBtn.tabIndex = 0;
-  copyBtn.tabIndex = 0;
   updateCorrectAvailability();
 };
 
@@ -120,6 +123,35 @@ const onCopy = () => {
   }
 };
 
+const setReadOutputLabel = (speaking) => {
+  const label = speaking ? 'Остановить чтение' : 'Прослушать результат';
+  readOutputBtn.setAttribute('aria-label', label);
+  readOutputBtn.title = label;
+};
+
+const onReadOutput = () => {
+  if (readOutputBtn.disabled || !lastCorrectedText) return;
+
+  const synth = window.speechSynthesis;
+  if (!synth) {
+    announce(lastCorrectedText);
+    return;
+  }
+
+  if (synth.speaking) {
+    synth.cancel();
+    setReadOutputLabel(false);
+    return;
+  }
+
+  const utter = new SpeechSynthesisUtterance(lastCorrectedText);
+  utter.lang = 'ru-RU';
+  utter.onend = () => setReadOutputLabel(false);
+  utter.onerror = () => setReadOutputLabel(false);
+  setReadOutputLabel(true);
+  synth.speak(utter);
+};
+
 inputText.addEventListener('input', autosize);
 inputText.addEventListener('input', updateCorrectAvailability);
 inputText.addEventListener('keydown', (e) => {
@@ -131,14 +163,7 @@ inputText.addEventListener('keydown', (e) => {
 correctBtn.addEventListener('click', onCorrect);
 clearBtn.addEventListener('click', onClear);
 copyBtn.addEventListener('click', onCopy);
-
-copyBtn.addEventListener('keydown', (e) => {
-  if (e.key === 'Tab' && !e.shiftKey) {
-    e.preventDefault();
-    copyBtn.tabIndex = -1;
-    clearBtn.focus();
-  }
-});
+readOutputBtn.addEventListener('click', onReadOutput);
 
 window.addEventListener('resize', autosize);
 

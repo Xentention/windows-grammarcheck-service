@@ -3,6 +3,8 @@ const ZOOM_MIN = 0.85;
 const ZOOM_MAX = 1.6;
 const ZOOM_STEP = 0.1;
 
+const srStatus = document.getElementById('sr-status');
+
 const loadState = () => {
   try {
     const raw = localStorage.getItem(STORAGE_KEY);
@@ -52,5 +54,15 @@ export function initAccessibility(refs, onChange) {
   zoomDec.addEventListener('click', () => update({ zoom: clampZoom(state.zoom - ZOOM_STEP) }));
   zoomInc.addEventListener('click', () => update({ zoom: clampZoom(state.zoom + ZOOM_STEP) }));
 
+  document.querySelector('.gec-info-focus')?.addEventListener('click', () => {
+    document.querySelector('.mv-gec-info')?.focus();
+  });
+
   apply();
+}
+
+export function announce(text) {
+  if (!srStatus) return;
+  srStatus.textContent = '';
+  setTimeout(() => { srStatus.textContent = text; }, 50);
 }
