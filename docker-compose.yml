@@ -1,40 +1,12 @@
 services:
-  # One-time model export + INT8 quantization. Gated behind the "build"
-  # profile so `docker compose up` never starts it accidentally -- run
-  # explicitly: `docker compose run --rm build-model`.
-  build-model:
-    build: .
-    profiles: ["build"]
-    command: ["python", "scripts/build_onnx_model.py"]
-    environment:
-      ONNX_MODEL_DIR: /models/sage-fredt5-large-onnx-int8
-    volumes:
-      # Caches the ~3.3GB HF download across reruns/rebuilds.
-      - hf-cache:/root/.cache/huggingface
-      - onnx-models:/models
-
-  # One-time ONNX export of the RUPunct_big punctuation/capitalization model.
-  # Same "build" profile gating -- run explicitly: `docker compose run --rm build-punct-model`.
-  build-punct-model:
-    build: .
-    profiles: ["build"]
-    command: ["python", "scripts/build_punct_model.py"]
-    environment:
-      PUNCT_MODEL_DIR: /models/rupunct-big-onnx
-    volumes:
-      - hf-cache:/root/.cache/huggingface
-      - onnx-models:/models
-
   web:
     build: .
     ports:
       - "8501:8501"
     environment:
-      # Must match the build services' output dirs -- this is the handoff contract.
       ONNX_MODEL_DIR: /models/sage-fredt5-large-onnx-int8
       PUNCT_MODEL_DIR: /models/rupunct-big-onnx
     volumes:
-      # Read-only: serving never writes to the model directory.
       - onnx-models:/models:ro
     restart: unless-stopped
 
