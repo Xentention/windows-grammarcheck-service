@@ -7,7 +7,7 @@ from . import punctuation
 
 logger = logging.getLogger(__name__)
 
-_PARAGRAPH_SPLIT_RE = re.compile(r"(\n{2,})")
+_PARAGRAPH_SPLIT_RE = re.compile(r"(\n{1,})")
 
 
 def split_paragraphs(text: str) -> list[str]:
@@ -19,8 +19,6 @@ def _correct_line(corrector, line: str, timeout_seconds: float, line_label: str)
         return line
 
     logger.info("%s: sending to grammar model (chars=%d)", line_label, len(line))
-    # ThreadPoolExecutor workers don't inherit contextvars automatically, so the
-    # request id would be lost in this worker thread's logs without this.
     ctx = contextvars.copy_context()
     executor = concurrent.futures.ThreadPoolExecutor(max_workers=1)
     try:

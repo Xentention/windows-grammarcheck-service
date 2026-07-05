@@ -11,7 +11,7 @@ logger = logging.getLogger(__name__)
 _CASE_PREFIXES = ["UPPER_TOTAL", "UPPER", "LOWER"]
 _CASE_FNS = {
     "LOWER": lambda w: w,
-    "UPPER": lambda w: w.capitalize(),
+    "UPPER": lambda w: w.title(),
     "UPPER_TOTAL": lambda w: w.upper(),
 }
 _PUNCT_SUFFIXES = {
@@ -27,9 +27,8 @@ _PUNCT_SUFFIXES = {
     "MNOGOTOCHIE": "...",
     # QUESTIONVOSKL this token was removed due to frequent false positives (when the ?! is rarely used irl)
 }
-_TIRE_SPACE_CASES = {"UPPER", "UPPER_TOTAL"}
 
-_PUNCT_NO_SPACE_BEFORE = {".", ",", "!", "?", ":", ";", "—", "..."}
+_PUNCT_NO_SPACE_BEFORE = {".", ",", "!", "?", ":", ";", "..."}
 _CLOSERS = {")", "]", "}", "»", "”", "’"}
 _OPENERS = {"(", "[", "{", "«", "“", "‘"}
 _AMBIGUOUS_QUOTES = {'"', "'"}
@@ -47,21 +46,17 @@ _MIXED_END_MARKS_PATTERN = re.compile(
 _DOUBLE_MARKS = {"?!", "!?"}
 _QV_CHARS = {"?", "!"}
 
-
 def _mirrored_combo(original: str, start: int, end: int) -> str:
     span = original[start:end]
     return span if span in _DOUBLE_MARKS else ""
 
-
 _classifier = None
-
 
 def _split_label(label: str) -> tuple[str, str]:
     for prefix in _CASE_PREFIXES:
         if label.startswith(prefix + "_"):
             return prefix, label[len(prefix) + 1:]
     raise ValueError(f"Unrecognized RUPunct label: {label}")
-
 
 def _render_token(word: str, label: str, original: str, end: int) -> str:
     case, punct_key = _split_label(label)
@@ -81,7 +76,7 @@ def _render_token(word: str, label: str, original: str, end: int) -> str:
     if suffix and (cased == suffix or cased.endswith(suffix)):
         suffix = ""
 
-    if suffix and punct_key == "TIRE" and case in _TIRE_SPACE_CASES:
+    if suffix and punct_key == "TIRE":
         return f"{cased} {suffix}"
     return cased + suffix
 
