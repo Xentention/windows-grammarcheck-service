@@ -1,0 +1,74 @@
+body[data-hc="on"] {
+  background: var(--hc-bg) !important;
+}
+
+body[data-hc="on"] main,
+body[data-hc="on"] main * {
+  color: var(--hc-fg) !important;
+  border-color: var(--hc-fg) !important;
+}
+
+body[data-hc="on"] main {
+  background: var(--hc-bg) !important;
+}
+
+body[data-hc="on"] .card {
+  background: var(--hc-bg) !important;
+  border: 2px solid var(--hc-fg) !important;
+  box-shadow: none !important;
+}
+
+body[data-hc="on"] .panel-head {
+  background: var(--hc-bg) !important;
+  border-bottom: 2px solid var(--hc-fg) !important;
+}
+
+body[data-hc="on"] .primary-btn {
+  background: var(--hc-fg) !important;
+  box-shadow: none !important;
+  border: 2px solid var(--hc-fg) !important;
+}
+
+body[data-hc="on"] .primary-btn,
+body[data-hc="on"] .primary-btn * {
+  color: var(--hc-bg) !important;
+}
+
+body[data-hc="on"] .icon-btn {
+  background: var(--hc-bg) !important;
+  border: 2px solid var(--hc-fg) !important;
+}
+
+body[data-hc="on"] .panel-dot {
+  background: var(--hc-fg) !important;
+}
+
+body[data-hc="on"] .error-card {
+  background: var(--hc-bg) !important;
+  border: 2px solid var(--hc-fg) !important;
+}
+
+body[data-hc="on"] main {
+  --hc-scale: 1.15;
+}
+
+body[data-hc="on"] .page-title,
+body[data-hc="on"] .panel-label,
+body[data-hc="on"] .input-textarea,
+body[data-hc="on"] .output-body,
+body[data-hc="on"] .elapsed-time,
+body[data-hc="on"] .error-card,
+body[data-hc="on"] .mv-gec-info h2,
+body[data-hc="on"] .mv-gec-info-text {
+  font-weight: 700 !important;
+  letter-spacing: .02em !important;
+}
+
+body[data-hc="on"] .page-title { font-size: calc(30px * var(--hc-scale)) !important; }
+body[data-hc="on"] .panel-label { font-size: calc(12px * var(--hc-scale)) !important; }
+body[data-hc="on"] .input-textarea,
+body[data-hc="on"] .output-body { font-size: calc(var(--field-font-size) * var(--hc-scale)) !important; }
+body[data-hc="on"] .elapsed-time { font-size: calc(14px * var(--hc-scale)) !important; }
+body[data-hc="on"] .error-card { font-size: calc(16px * var(--hc-scale)) !important; }
+body[data-hc="on"] .mv-gec-info h2 { font-size: calc(22px * var(--hc-scale)) !important; }
+body[data-hc="on"] .mv-gec-info-text { font-size: calc(15px * var(--hc-scale)) !important; }

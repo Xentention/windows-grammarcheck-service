@@ -1,0 +1,68 @@
+:root {
+  /* surfaces */
+  --bg: #F4F1EA;
+  --card-bg: #fff;
+  --card-border: #E7E0D2;
+  --panelhead-bg: #EAE3D5;
+  --panelhead-border: #E3DCCC;
+  --pill-bg: #F5F2EA;
+
+  /* brand / accent */
+  --accent: #DC0000;
+  --accent-hover: #B30000;
+  --header-bg: #101319;
+
+  /* text */
+  --text: #1E1913;
+  --text-muted-2: #4A4436;
+  --text-faint: #8A8171;
+  --placeholder: #A79E8C;
+
+  /* disabled controls: neutral (not brand-tinted) so state reads unambiguously;
+     #565656 gives 7.3:1 against --on-dark text (AAA) and 5.7:1 against
+     --panelhead-bg so the button edge stays visible, not just the exempt minimum */
+  --disabled-bg: #565656;
+
+  /* error */
+  --error-bg: #FFF2F2;
+  --error-border: #FEDADA;
+  --error-text: #920000;
+  --error-text-strong: #B30000;
+
+  /* misc semantic colors */
+  --selection-bg: #F6D2CC;
+
+  /* high-contrast mode */
+  --hc-bg: #ffffff;
+  --hc-fg: #000000;
+
+  /* text/icons/borders on the dark header surface */
+  --on-dark: #fff;
+  --on-dark-border: rgba(255,255,255,.14);
+  --on-dark-hover-bg: rgba(255,255,255,.12);
+  --btn-spinner-track: rgba(255,255,255,.4);
+
+  /* type */
+  --font-heading: 'Lora', Georgia, serif;
+  --font-body: 'Open Sans', system-ui, sans-serif;
+
+  /* shape */
+  --radius-card: 10px;
+  --radius-control: 8px;
+
+  /* elevation */
+  --shadow-card: 0 1px 2px rgba(11,13,16,0.04);
+  --shadow-primary: 0 10px 24px -14px rgba(166,55,26,0.55);
+
+  /* layout */
+  --content-width: 1100px;
+  --control-size: 44px;
+
+  /* repeated block padding (textarea / output body) */
+  --pad-block-y: 22px;
+  --pad-block-x: 24px;
+
+  /* shared text look for the input textarea and output body, so they read as one field */
+  --field-font-size: 20px;
+  --field-line-height: 1.75;
+}
