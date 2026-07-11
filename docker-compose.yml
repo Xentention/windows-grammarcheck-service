@@ -1,11 +1,15 @@
 services:
   web:
-    build: .
+    build:
+      context: .
+      args:
+        PORT: ${PORT:-8501}
     ports:
-      - "8501:8501"
+      - "${PORT:-8501}:${PORT:-8501}"
     environment:
-      ONNX_MODEL_DIR: /models/sage-fredt5-large-onnx-int8
-      PUNCT_MODEL_DIR: /models/rupunct-big-onnx
+      PORT: ${PORT:-8501}
+      MODELS_DIR: /models
+      SAGE_QUANT: ${SAGE_QUANT:-int8}
     volumes:
       - onnx-models:/models:ro
     restart: unless-stopped

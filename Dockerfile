@@ -17,6 +17,8 @@ ENV PYTHONUNBUFFERED=1
 COPY app/ ./app/
 COPY scripts/ ./scripts/
 
-EXPOSE 8501
+ARG PORT=8501
+ENV PORT=${PORT}
+EXPOSE ${PORT}
 
 CMD ["python", "-m", "app.server"]
