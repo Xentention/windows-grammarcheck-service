@@ -8,7 +8,7 @@ on:
       - 'v*'
 
 permissions:
-  contents: write  
+  contents: write 
 
 jobs:
   build:
@@ -28,14 +28,17 @@ jobs:
           pip install --no-cache-dir -r requirements-frozen.txt
           pip install pyinstaller
 
+      - name: Prepare .env # copying non-secret env vars to the bundle (if needed) 
+        shell: cmd
+        run: |
+          type nul > .env
+
       - name: Build exe
         shell: cmd
         run: |
           pyinstaller --name RuGrammarCheck --onedir --console ^
             --collect-all onnxruntime ^
-            --add-data "models\sage-fredt5-large-onnx-int4;models\sage-fredt5-large-onnx-int4" ^
-            --add-data "models\sage-fredt5-large-onnx-int8;models\sage-fredt5-large-onnx-int8" ^
-            --add-data "models\rupunct-big-onnx;models\rupunct-big-onnx" ^
+            --add-data "models;models" ^
             --add-data "app\templates;app\templates" ^
             --add-data ".env;." ^
             launcher.py
@@ -54,9 +57,9 @@ jobs:
           name: RuGrammarCheck-windows
           path: dist/RuGrammarCheck/
 
-      # everything below only runs when triggered by a version tag
+      # only runs when triggered by a version tag
 
-      - name: Zip build
+      - name: Zip build for release
         if: github.ref_type == 'tag'
         shell: cmd
         run: powershell Compress-Archive -Path dist\RuGrammarCheck\* -DestinationPath RuGrammarCheck-%GITHUB_REF_NAME%-windows.zip
