@@ -25,7 +25,7 @@ jobs:
 
       - name: Install dependencies
         run: |
-          pip install --no-cache-dir -r requirements-frozen.txt
+          pip install --no-cache-dir -r requirements.txt
           pip install pyinstaller
 
       - name: Prepare .env # copying non-secret env vars to the bundle (if needed) 
@@ -39,7 +39,7 @@ jobs:
           pyinstaller --name RuGrammarCheck --onedir --console ^
             --collect-all onnxruntime ^
             --add-data "models;models" ^
-            --add-data "app\templates;app\templates" ^
+            --add-data "app;app" ^
             --add-data ".env;." ^
             launcher.py
 
