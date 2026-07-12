@@ -17,35 +17,22 @@ logger = logging.getLogger(__name__)
 
 app = Flask(__name__)
 
-_REQUIRED_MODELS = {
-    "grammar correction (sage)": config.ONNX_MODEL_DIR,
-    "punctuation restoration (RUPunct)": config.PUNCT_MODEL_DIR,
-}
-_missing = [
-    f"{name} -> {model_dir}"
-    for name, model_dir in _REQUIRED_MODELS.items()
-    if not Path(model_dir, config.BUILD_COMPLETE_MARKER).exists()
-]
-if _missing:
-    logger.error(
-        "Missing %s marker(s) for: %s -- run the model build steps first, "
-        "e.g. `docker compose run --rm build-model` and `docker compose run --rm build-punct-model`.",
-        config.BUILD_COMPLETE_MARKER,
-        ", ".join(_missing),
-    )
-    sys.exit(1)
-
 logger.info("Loading grammar and punctuation models...")
 with concurrent.futures.ThreadPoolExecutor(max_workers=2) as _startup_pool:
-    _corrector_future = _startup_pool.submit(
-        SageOnnxCorrector,
-        config.ONNX_MODEL_DIR,
-        max_new_tokens_multiplier=config.MAX_NEW_TOKENS_MULTIPLIER,
-        max_input_tokens=config.MAX_INPUT_TOKENS,
-    )
-    _punct_future = _startup_pool.submit(punctuation.load)
-    corrector = _corrector_future.result()
-    _punct_future.result()
+    try:
+        _corrector_future = _startup_pool.submit(
+            SageOnnxCorrector,
+            config.ONNX_MODEL_DIR,
+            max_new_tokens_multiplier=config.MAX_NEW_TOKENS_MULTIPLIER,
+            max_input_tokens=config.MAX_INPUT_TOKENS,
+        )
+        _punct_future = _startup_pool.submit(punctuation.load)
+
+        corrector = _corrector_future.result()
+        _punct_future.result()
+    except Exception as e:
+        logger.exception("Could not load the model: %s", e)
+        sys.exit(1)
 logger.info("Models loaded.")
 
 warmer = KeepAliveWarmer(corrector, config.KEEPALIVE_IDLE_SECONDS)

@@ -14,5 +14,3 @@ PUNCT_MODEL_DIR: str = os.environ.get("PUNCT_MODEL_DIR", str(Path(MODELS_DIR) / 
 HOST: str = os.environ.get("HOST", "0.0.0.0")
 PORT: int = int(os.environ.get("PORT", "8501"))
 KEEPALIVE_IDLE_SECONDS: float = float(os.environ.get("KEEPALIVE_IDLE_SECONDS", "240"))
-
-BUILD_COMPLETE_MARKER: str = ".build_complete"
