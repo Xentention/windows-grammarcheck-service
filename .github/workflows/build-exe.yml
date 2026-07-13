@@ -38,9 +38,11 @@ jobs:
         run: |
           pyinstaller --name RuGrammarCheck --onedir --console ^
             --collect-all onnxruntime ^
+            --exclude-module tkinter ^
             --add-data "models;models" ^
             --add-data "app/templates;app/templates" ^
             --add-data "app/static;app/static" ^
+            --add-data "clipboard;clipboard" ^
             --add-data ".env;." ^
             launcher.py
 
