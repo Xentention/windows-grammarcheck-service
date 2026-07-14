@@ -1,0 +1,105 @@
+name: Build RuGrammarCheck Installer
+
+on:
+  workflow_dispatch:
+  push:
+    tags:
+      - 'v*'
+
+permissions:
+  contents: write
+
+jobs:
+  build:
+    runs-on: windows-2025
+
+    steps:
+      - name: Check out repo
+        uses: nschloe/action-cached-lfs-checkout@v1
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+
+      - name: Install dependencies
+        run: |
+          pip install --no-cache-dir -r requirements-frozen.txt
+          pip install pyinstaller
+
+      - name: Prepare .env
+        shell: cmd
+        run: |
+          type nul > .env
+
+      - name: Build exe
+        shell: cmd
+        run: |
+          pyinstaller --name RuGrammarCheck --onedir --console ^
+            --collect-all onnxruntime ^
+            --exclude-module tkinter ^
+            --add-data ".env;." ^
+            --add-data "models;models" ^
+            --add-data "app/templates;app/templates" ^
+            --add-data "app/static;app/static" ^
+            launcher.py
+
+      - name: Bundle NSSM
+        shell: pwsh
+        run: |
+          Invoke-WebRequest -Uri "https://nssm.cc/ci/nssm-2.24-101-g897c7ad.zip" -OutFile nssm.zip
+          Expand-Archive nssm.zip -DestinationPath nssm_extracted
+          Copy-Item nssm_extracted\nssm-2.24-101-g897c7ad\win64\nssm.exe -Destination dist\RuGrammarCheck\nssm.exe
+
+      - name: Copy installation scripts
+        shell: pwsh
+        run: |
+          $src = "install-scripts"
+          $dst = "dist\RuGrammarCheck"
+          if (Test-Path $src) {
+            Get-ChildItem -Path $src -File -Recurse | ForEach-Object {
+              $rel = $_.FullName.Substring((Resolve-Path $src).Path.Length).TrimStart('\')
+              $targetDir = Join-Path $dst (Split-Path $rel -Parent)
+              if ($targetDir) {
+                New-Item -ItemType Directory -Force -Path $targetDir | Out-Null
+              }
+              Copy-Item -LiteralPath $_.FullName -Destination (Join-Path $dst $rel) -Force
+            }
+          }
+
+      - name: Copy clipboard scripts
+        shell: pwsh
+        run: |
+          $src = "clipboard"
+          $dst = "dist\RuGrammarCheck\clipboard"
+          if (Test-Path $src) {
+            Get-ChildItem -Path $src -File -Recurse | ForEach-Object {
+              $rel = $_.FullName.Substring((Resolve-Path $src).Path.Length).TrimStart('\')
+              $targetDir = Join-Path $dst (Split-Path $rel -Parent)
+              if ($targetDir) {
+                New-Item -ItemType Directory -Force -Path $targetDir | Out-Null
+              }
+              Copy-Item -LiteralPath $_.FullName -Destination (Join-Path $dst $rel) -Force
+            }
+          }
+
+      - name: Build Inno Setup installer
+        uses: Minionguyjpro/Inno-Setup-Action@v1.2.2
+        with:
+          path: RuGrammarCheck.iss
+          options: /O+
+
+      - name: Upload installer artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: RuGrammarCheck-installer
+          path: output/*.exe
+
+      # Only runs when triggered by a version tag
+      - name: Publish GitHub Release
+        if: github.ref_type == 'tag'
+        uses: softprops/action-gh-release@v3
+        with:
+          tag_name: ${{ github.ref_name }}
+          files: output/*.exe
+          generate_release_notes: true
