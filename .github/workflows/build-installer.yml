@@ -47,7 +47,6 @@ jobs:
       - name: Bundle NSSM
         shell: pwsh
         run: |
-          Invoke-WebRequest -Uri "https://nssm.cc/ci/nssm-2.24-101-g897c7ad.zip" -OutFile nssm.zip
           Expand-Archive nssm.zip -DestinationPath nssm_extracted
           Copy-Item nssm_extracted\nssm-2.24-101-g897c7ad\win64\nssm.exe -Destination dist\RuGrammarCheck\nssm.exe
 
