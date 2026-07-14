@@ -23,8 +23,8 @@ OutputBaseFilename={#RuGrammarCheckName}-Setup
 OutputDir=output
 
 [Languages]
-Name: "english"; MessagesFile: "compiler:Default.isl"
-Name: "russian"; MessagesFile: "compiler:Languages\Russian.isl"
+Name: "en"; MessagesFile: "compiler:Default.isl"
+Name: "ru"; MessagesFile: "compiler:Languages\Russian.isl"
 
 [CustomMessages]
 en.QuantPageLabel=Which model should be used by the service?
@@ -45,8 +45,8 @@ ru.HotkeyOpt=Включить горячие клавиши
 ; build from PyInstaller
 Source: "dist\RuGrammarCheck\*"; DestDir: "{app}"; Flags: ignoreversion recursesubdirs createallsubdirs
 
-; Installation scripts
-Source: "installation-scripts\*"; DestDir: "{app}"; Flags: ignoreversion recursesubdirs createallsubdirs
+; Install scripts
+Source: "install-scripts\*"; DestDir: "{app}"; Flags: ignoreversion recursesubdirs createallsubdirs
 
 ; Clipboard scripts
 Source: "clipboard\*"; DestDir: "{app}"; Flags: ignoreversion recursesubdirs createallsubdirs
@@ -129,7 +129,7 @@ begin
     if ShouldEnableHotkeys then
     begin
       RunPs1(
-        'install-hotkeys.ps1',
+        'install-scripts\create-hotkeys.ps1',
         '-InstallDir "' + ExpandConstant('{app}') + '"'
       );
     end;
@@ -146,7 +146,7 @@ begin
     );
 
     RunPs1(
-      'uninstall-hotkeys.ps1',
+      'install-scripts\uninstall-hotkeys.ps1',
       '-InstallDir "' + ExpandConstant('{app}') + '"'
     );
   end;
