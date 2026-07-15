@@ -48,6 +48,7 @@ jobs:
           pyinstaller --name RuGrammarCheck --onedir --console ^
             --collect-all onnxruntime ^
             --exclude-module tkinter ^
+            --icon "icons/app.ico" ^
             --add-data "LICENSE;." ^
             --add-data "README.md;." ^
             --add-data ".env;." ^

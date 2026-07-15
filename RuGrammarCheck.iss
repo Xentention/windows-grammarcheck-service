@@ -29,6 +29,7 @@ SolidCompression=yes
 WizardStyle=modern
 OutputBaseFilename={#OutputBaseName}
 OutputDir=output
+SetupIconFile=icons\app.ico
 
 [Languages]
 Name: "en"; MessagesFile: "compiler:Default.isl"
