@@ -2,7 +2,16 @@ Set-StrictMode -Version Latest
 $ErrorActionPreference = 'Stop'
 
 $GcHost = if ($env:GRAMMARCHECK_HOST) { $env:GRAMMARCHECK_HOST } else { '127.0.0.1' }
-$GcPort = if ($env:PORT) { $env:PORT } else { '8501' }  # same var the server uses
+
+# The service reserves a dynamic port at install time and records it in a fixed,
+# install-dir-independent file (see install-service.ps1) so this client can find it.
+# Precedence: explicit GRAMMARCHECK_URL (below) > port file > PORT env var > default 8501.
+$PortFile = Join-Path $env:ProgramData 'RuGrammarCheck\port'
+$GcPort =
+    if (Test-Path -LiteralPath $PortFile) { (Get-Content -LiteralPath $PortFile -Raw).Trim() }
+    elseif ($env:PORT) { $env:PORT }
+    else { '8501' }
+
 $BaseUrl = if ($env:GRAMMARCHECK_URL) { $env:GRAMMARCHECK_URL } else { "http://${GcHost}:${GcPort}" }
 
 $StateDir = if ($env:GRAMMARCHECK_STATE_DIR) { $env:GRAMMARCHECK_STATE_DIR } else { Join-Path $env:LOCALAPPDATA 'grammarcheck' }

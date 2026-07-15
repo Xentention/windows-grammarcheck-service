@@ -47,6 +47,9 @@ Source: "install-scripts\*"; DestDir: "{app}"; Flags: ignoreversion recursesubdi
 ; Clipboard scripts
 Source: "clipboard\*"; DestDir: "{app}\clipboard"; Flags: ignoreversion recursesubdirs createallsubdirs
 
+; AutoHotkey runtime (expanded at install time by create-hotkeys.ps1)
+Source: "ahk.zip"; DestDir: "{app}"; Flags: ignoreversion
+
 [Code]
 var
   HotkeyPage: TInputOptionWizardPage;

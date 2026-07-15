@@ -50,6 +50,13 @@ $out = $map.GetEnumerator() | ForEach-Object { "$($_.Key)=$($_.Value)" }
 
 Write-Host "Updated .env with PORT=$port"
 
+# Publish the chosen port to a fixed, install-dir-independent location so the clipboard
+# client (clipboard/_common.ps1) can reach the service no matter where it was installed.
+$portFile = Join-Path $env:ProgramData 'RuGrammarCheck\port'
+New-Item -ItemType Directory -Force -Path (Split-Path -Parent $portFile) | Out-Null
+[IO.File]::WriteAllText($portFile, "$port", $utf8NoBom)
+Write-Host "Published service port to $portFile"
+
 $existing = Get-Service -Name $serviceName -ErrorAction SilentlyContinue
 if ($existing) {
     Write-Host "Removing existing service '$serviceName'..."

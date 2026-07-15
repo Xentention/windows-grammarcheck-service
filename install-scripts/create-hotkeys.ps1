@@ -13,7 +13,7 @@ $ahkScript = Join-Path $ahkDir 'hotkeys.ahk'
 $taskName  = 'RuGrammarCheckHotkeys'
 if (-not (Test-Path $ahkExe)) {
     New-Item -ItemType Directory -Force -Path $ahkDir | Out-Null
-    $ahkZip = Join-Path $env:TEMP 'ahk.zip'
+    $ahkZip = Join-Path $InstallDir 'ahk.zip'
     Expand-Archive -Path $ahkZip -DestinationPath $ahkDir -Force
     if (-not (Test-Path $ahkExe)) {
         $candidates = Get-ChildItem $ahkDir -Filter 'AutoHotkey*.exe' | Sort-Object Name
