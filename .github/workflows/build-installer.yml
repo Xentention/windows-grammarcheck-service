@@ -13,6 +13,9 @@ jobs:
   build:
     runs-on: windows-2025
     timeout-minutes: 60
+    strategy:
+      matrix:
+        quant: [int4, int8]
 
     steps:
       - name: Check out repo
@@ -29,9 +32,15 @@ jobs:
           pip install pyinstaller
 
       - name: Prepare .env
-        shell: cmd
+        shell: pwsh
         run: |
-          type nul > .env
+          $quant = "${{ matrix.quant }}"
+          @(
+            "MODELS_DIR=models",
+            "ONNX_MODEL_DIR=models/sage-fredt5-large-onnx",
+            "PUNCT_MODEL_DIR=models/rupunct-big-onnx",
+            "SAGE_QUANT=$quant"
+          ) -join "`n" | Set-Content -Path .env
 
       - name: Build exe
         shell: cmd
@@ -40,7 +49,8 @@ jobs:
             --collect-all onnxruntime ^
             --exclude-module tkinter ^
             --add-data ".env;." ^
-            --add-data "models;models" ^
+            --add-data "models/sage-fredt5-large-onnx-${{ matrix.quant }};models/sage-fredt5-large-onnx" ^
+            --add-data "models/rupunct-big-onnx;models/rupunct-big-onnx" ^
             --add-data "app/templates;app/templates" ^
             --add-data "app/static;app/static" ^
             launcher.py
@@ -82,12 +92,24 @@ jobs:
               Copy-Item -LiteralPath $_.FullName -Destination (Join-Path $dst $rel) -Force
             }
           }
+      
+      - name: Derive version from tag
+        id: version
+        shell: pwsh
+        run: |
+          $tag = "${{ github.ref_name }}"
+          if ("${{ github.ref_type }}" -eq "tag" -and $tag -match "^v(.*)$") {
+            $version = $Matches[1]
+          } else {
+            $version = "unknown"
+          }
+          echo "version=$version" >> $env:GITHUB_OUTPUT
 
       - name: Build Inno Setup installer
         uses: Minionguyjpro/Inno-Setup-Action@v1.2.2
         with:
           path: RuGrammarCheck.iss
-          options: /O+
+          options: "/O+ /DRuGrammarCheckVersion=${{ steps.version.outputs.version }}"
 
       - name: Install 7-Zip
         shell: pwsh
@@ -97,9 +119,10 @@ jobs:
       - name: Create ZIP
         shell: pwsh
         run: |
-          $version = "${{ github.ref_name }}"
+          $version = "${{ steps.version.outputs.version }}"
+          $quant = "${{ matrix.quant }}"
           $srcDir = "output"
-          $outFile = "RuGrammarCheck-${version}-windows.zip"
+          $outFile = "RuGrammarCheck-${version}-windows-${quant}.zip"
 
           & 'C:\Program Files\7-Zip\7z.exe' a -tzip -mx=9 -ssw `
             $outFile $srcDir\*
@@ -107,8 +130,8 @@ jobs:
       - name: Upload installer artifact
         uses: actions/upload-artifact@v4
         with:
-          name: RuGrammarCheck-installer
-          path: RuGrammarCheck-*.zip
+          name: RuGrammarCheck-installer-${{ matrix.quant }}
+          path: RuGrammarCheck-${{ steps.version.outputs.version }}-windows-${{ matrix.quant }}.zip
           if-no-files-found: error
 
       # Only runs when triggered by a version tag
@@ -117,5 +140,5 @@ jobs:
         uses: softprops/action-gh-release@v3
         with:
           tag_name: ${{ github.ref_name }}
-          files: RuGrammarCheck-*-windows.zip
+          files: RuGrammarCheck-*-windows-${{ matrix.quant }}.zip
           generate_release_notes: true

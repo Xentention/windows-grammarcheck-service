@@ -1,8 +1,6 @@
 param(
     [Parameter(Mandatory=$true)]
-    [string]$InstallDir,
-    [Parameter(Mandatory=$true)]
-    [string]$QuantModel
+    [string]$InstallDir
 )
 
 Set-StrictMode -Version Latest
@@ -31,7 +29,6 @@ foreach ($line in $lines) {
     if ($line -match '^(.*?)=(.*)$') { $map[$matches[1].Trim()] = $matches[2].Trim() }
 }
 $map['PORT'] = "$port"
-$map['QUANT_MODEL'] = $QuantModel
 
 $out = $map.GetEnumerator() | ForEach-Object { "$($_.Key)=$($_.Value)" }
 [IO.File]::WriteAllText($envFile, ($out -join "`r`n"), $utf8NoBom)
@@ -41,7 +38,7 @@ $out = $map.GetEnumerator() | ForEach-Object { "$($_.Key)=$($_.Value)" }
 & $nssm set $serviceName DisplayName $serviceName
 & $nssm set $serviceName Description "Локальный сервис для исправления орфографии и пунктуации русского текста"
 & $nssm set $serviceName Start SERVICE_AUTO_START
-& $nssm set $serviceName AppEnvironmentExtra "PORT=$port`0QUANT_MODEL=$QuantModel"
+& $nssm set $serviceName AppEnvironmentExtra "PORT=$port"
 & $nssm set $serviceName AppStdout (Join-Path $serviceLogsDir 'stdout.log')
 & $nssm set $serviceName AppStderr (Join-Path $serviceLogsDir 'stderr.log')
 & $nssm set $serviceName AppRotateFiles 1
