@@ -12,6 +12,7 @@ permissions:
 jobs:
   build:
     runs-on: windows-2025
+    timeout-minutes: 60
 
     steps:
       - name: Check out repo
@@ -88,11 +89,27 @@ jobs:
           path: RuGrammarCheck.iss
           options: /O+
 
+      - name: Install 7-Zip
+        shell: pwsh
+        run: |
+          choco install 7zip -y
+
+      - name: Create ZIP
+        shell: pwsh
+        run: |
+          $version = "${{ github.ref_name }}"
+          $srcDir = "output"
+          $outFile = "RuGrammarCheck-${version}-windows.zip"
+
+          & 'C:\Program Files\7-Zip\7z.exe' a -tzip -mx=9 -ssw `
+            $outFile $srcDir\*
+
       - name: Upload installer artifact
         uses: actions/upload-artifact@v4
         with:
           name: RuGrammarCheck-installer
-          path: output/*.exe
+          path: RuGrammarCheck-*.zip
+          if-no-files-found: error
 
       # Only runs when triggered by a version tag
       - name: Publish GitHub Release
@@ -100,5 +117,5 @@ jobs:
         uses: softprops/action-gh-release@v3
         with:
           tag_name: ${{ github.ref_name }}
-          files: output/*.exe
+          files: RuGrammarCheck-*-windows.zip
           generate_release_notes: true
