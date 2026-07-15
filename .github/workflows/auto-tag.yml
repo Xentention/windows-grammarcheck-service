@@ -4,7 +4,15 @@ on:
   pull_request:
     types: [closed]
     branches:
-      - main
+      - main    
+    paths-ignore:
+      - 'README.md'
+      - 'LICENSE'
+      - '.gitignore' 
+      - '.dockerignore' 
+      - 'Dockerfile' 
+      - 'docker-compose.yml'
+      - 'docs/**' 
 
 jobs:
   tag:

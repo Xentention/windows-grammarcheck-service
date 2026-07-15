@@ -41,11 +41,11 @@ ru.HotkeyOpt=Включить горячие клавиши
 ; Build from PyInstaller (includes both model folders)
 Source: "dist\RuGrammarCheck\*"; DestDir: "{app}"; Flags: ignoreversion recursesubdirs createallsubdirs
 
-; Install scripts
+; Install scripts (root: install-service.ps1, uninstall-service.ps1, etc.)
 Source: "install-scripts\*"; DestDir: "{app}"; Flags: ignoreversion recursesubdirs createallsubdirs
 
 ; Clipboard scripts
-Source: "clipboard\*"; DestDir: "{app}"; Flags: ignoreversion recursesubdirs createallsubdirs
+Source: "clipboard\*"; DestDir: "{app}\clipboard"; Flags: ignoreversion recursesubdirs createallsubdirs
 
 [Code]
 var
@@ -76,7 +76,8 @@ var
   ResultCode: Integer;
   CmdLine: string;
 begin
-  CmdLine := '-NoProfile -ExecutionPolicy Bypass -File "' + ExpandConstant('{app}\') + ScriptName + '" ' + Args;
+  CmdLine := '-NoProfile -ExecutionPolicy Bypass -File "' +
+             ExpandConstant('{app}\') + ScriptName + '" ' + Args;
   ShellExec(
     '',
     'powershell.exe',
@@ -117,7 +118,7 @@ begin
     );
 
     RunPs1(
-      'install-scripts\uninstall-hotkeys.ps1',
+      'install-scripts\remove-hotkeys.ps1',
       '-InstallDir "' + ExpandConstant('{app}') + '"'
     );
   end;

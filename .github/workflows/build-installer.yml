@@ -48,6 +48,8 @@ jobs:
           pyinstaller --name RuGrammarCheck --onedir --console ^
             --collect-all onnxruntime ^
             --exclude-module tkinter ^
+            --add-data "LICENSE;." ^
+            --add-data "README.md;." ^
             --add-data ".env;." ^
             --add-data "models/sage-fredt5-large-onnx-${{ matrix.quant }};models/sage-fredt5-large-onnx" ^
             --add-data "models/rupunct-big-onnx;models/rupunct-big-onnx" ^
@@ -65,31 +67,37 @@ jobs:
         shell: pwsh
         run: |
           $src = "install-scripts"
-          $dst = "dist\RuGrammarCheck"
+          $dst = "dist\RuGrammarCheck\install-scripts"
+
           if (Test-Path $src) {
-            Get-ChildItem -Path $src -File -Recurse | ForEach-Object {
-              $rel = $_.FullName.Substring((Resolve-Path $src).Path.Length).TrimStart('\')
-              $targetDir = Join-Path $dst (Split-Path $rel -Parent)
-              if ($targetDir) {
-                New-Item -ItemType Directory -Force -Path $targetDir | Out-Null
+            Get-ChildItem -Path $src -Recurse -File | ForEach-Object {
+              $relPath = $_.FullName.Substring((Resolve-Path $src).Path.Length).TrimStart('\')
+              $destFile = Join-Path $dst $relPath
+              $destDir  = Split-Path $destFile -Parent
+
+              if ($destDir -and (Test-Path $destDir -PathType Container) -eq $false) {
+                New-Item -ItemType Directory -Force -Path $destDir | Out-Null
               }
-              Copy-Item -LiteralPath $_.FullName -Destination (Join-Path $dst $rel) -Force
+
+              Copy-Item -LiteralPath $_.FullName -Destination $destFile -Force
             }
           }
 
       - name: Copy clipboard scripts
         shell: pwsh
         run: |
-          $src = "clipboard"
-          $dst = "dist\RuGrammarCheck\clipboard"
+          $src     = "clipboard"
+          $dstClip = "dist\RuGrammarCheck\clipboard"
+
           if (Test-Path $src) {
-            Get-ChildItem -Path $src -File -Recurse | ForEach-Object {
-              $rel = $_.FullName.Substring((Resolve-Path $src).Path.Length).TrimStart('\')
-              $targetDir = Join-Path $dst (Split-Path $rel -Parent)
-              if ($targetDir) {
-                New-Item -ItemType Directory -Force -Path $targetDir | Out-Null
+            Get-ChildItem -Path $src -Recurse -File | ForEach-Object {
+              $relPath = $_.FullName.Substring((Resolve-Path $src).Path.Length).TrimStart('\')
+              $destFile = Join-Path $dstClip $relPath
+              $destDir  = Split-Path $destFile -Parent
+              if ($destDir -and (Test-Path $destDir -PathType Container) -eq $false) {
+                New-Item -ItemType Directory -Force -Path $destDir | Out-Null
               }
-              Copy-Item -LiteralPath $_.FullName -Destination (Join-Path $dst $rel) -Force
+              Copy-Item -LiteralPath $_.FullName -Destination $destFile -Force
             }
           }
       
@@ -111,27 +119,11 @@ jobs:
           path: RuGrammarCheck.iss
           options: "/O+ /DRuGrammarCheckVersion=${{ steps.version.outputs.version }}"
 
-      - name: Install 7-Zip
-        shell: pwsh
-        run: |
-          choco install 7zip -y
-
-      - name: Create ZIP
-        shell: pwsh
-        run: |
-          $version = "${{ steps.version.outputs.version }}"
-          $quant = "${{ matrix.quant }}"
-          $srcDir = "output"
-          $outFile = "RuGrammarCheck-${version}-windows-${quant}.zip"
-
-          & 'C:\Program Files\7-Zip\7z.exe' a -tzip -mx=9 -ssw `
-            $outFile $srcDir\*
-
       - name: Upload installer artifact
         uses: actions/upload-artifact@v4
         with:
           name: RuGrammarCheck-installer-${{ matrix.quant }}
-          path: RuGrammarCheck-${{ steps.version.outputs.version }}-windows-${{ matrix.quant }}.zip
+          path: output/RuGrammarCheck-Setup.exe
           if-no-files-found: error
 
       # Only runs when triggered by a version tag
@@ -140,5 +132,5 @@ jobs:
         uses: softprops/action-gh-release@v3
         with:
           tag_name: ${{ github.ref_name }}
-          files: RuGrammarCheck-*-windows-${{ matrix.quant }}.zip
+          files: output/RuGrammarCheck-Setup.exe
           generate_release_notes: true
