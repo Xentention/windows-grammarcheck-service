@@ -12,6 +12,7 @@ $exe           = Join-Path $InstallDir 'RuGrammarCheck.exe'
 $envFile       = Join-Path $InstallDir '.env'
 $logsDir       = Join-Path $InstallDir 'logs'
 $serviceLogsDir = Join-Path $logsDir $serviceName
+$portFile      = Join-Path $env:ProgramData 'RuGrammarCheck\port'
 
 # --- Проверка базовых файлов ---
 foreach ($path in $nssm, $exe) {
@@ -21,6 +22,14 @@ foreach ($path in $nssm, $exe) {
 }
 
 New-Item -ItemType Directory -Force -Path $serviceLogsDir | Out-Null
+
+# Release a previously reserved port range
+if (Test-Path -LiteralPath $portFile) {
+    $oldPort = (Get-Content -LiteralPath $portFile -Raw).Trim()
+    if ($oldPort -match '^\d+$') {
+        & (Join-Path $InstallDir 'install-scripts\release-port.ps1') -Port ([int]$oldPort)
+    }
+}
 
 $port = & (Join-Path $InstallDir 'install-scripts\reserve-port.ps1')
 if (-not $port) {
@@ -50,9 +59,6 @@ $out = $map.GetEnumerator() | ForEach-Object { "$($_.Key)=$($_.Value)" }
 
 Write-Host "Updated .env with PORT=$port"
 
-# Publish the chosen port to a fixed, install-dir-independent location so the clipboard
-# client (clipboard/_common.ps1) can reach the service no matter where it was installed.
-$portFile = Join-Path $env:ProgramData 'RuGrammarCheck\port'
 New-Item -ItemType Directory -Force -Path (Split-Path -Parent $portFile) | Out-Null
 [IO.File]::WriteAllText($portFile, "$port", $utf8NoBom)
 Write-Host "Published service port to $portFile"

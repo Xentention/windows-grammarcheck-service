@@ -117,13 +117,13 @@ jobs:
         uses: Minionguyjpro/Inno-Setup-Action@v1.2.2
         with:
           path: RuGrammarCheck.iss
-          options: "/O+ /DRuGrammarCheckVersion=${{ steps.version.outputs.version }}"
+          options: "/O+ /DRuGrammarCheckVersion=${{ steps.version.outputs.version }} /DOutputBaseName=RuGrammarCheck-Setup-${{ matrix.quant }}"
 
       - name: Upload installer artifact
         uses: actions/upload-artifact@v4
         with:
           name: RuGrammarCheck-installer-${{ matrix.quant }}
-          path: output/RuGrammarCheck-Setup.exe
+          path: output/RuGrammarCheck-Setup-${{ matrix.quant }}.exe
           if-no-files-found: error
 
       # Only runs when triggered by a version tag
@@ -132,5 +132,5 @@ jobs:
         uses: softprops/action-gh-release@v3
         with:
           tag_name: ${{ github.ref_name }}
-          files: output/RuGrammarCheck-Setup.exe
+          files: output/RuGrammarCheck-Setup-${{ matrix.quant }}.exe
           generate_release_notes: true

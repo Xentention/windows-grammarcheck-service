@@ -19,6 +19,7 @@ COPY scripts/ ./scripts/
 
 ARG PORT=8501
 ENV PORT=${PORT}
+ENV HOST=0.0.0.0
 EXPOSE ${PORT}
 
 CMD ["python", "-m", "app.server"]

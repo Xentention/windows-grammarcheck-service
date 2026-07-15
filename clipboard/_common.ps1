@@ -3,9 +3,6 @@ $ErrorActionPreference = 'Stop'
 
 $GcHost = if ($env:GRAMMARCHECK_HOST) { $env:GRAMMARCHECK_HOST } else { '127.0.0.1' }
 
-# The service reserves a dynamic port at install time and records it in a fixed,
-# install-dir-independent file (see install-service.ps1) so this client can find it.
-# Precedence: explicit GRAMMARCHECK_URL (below) > port file > PORT env var > default 8501.
 $PortFile = Join-Path $env:ProgramData 'RuGrammarCheck\port'
 $GcPort =
     if (Test-Path -LiteralPath $PortFile) { (Get-Content -LiteralPath $PortFile -Raw).Trim() }

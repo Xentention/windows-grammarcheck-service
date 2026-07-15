@@ -11,6 +11,6 @@ PARAGRAPH_TIMEOUT_SECONDS: float = float(os.environ.get("PARAGRAPH_TIMEOUT_SECON
 MAX_NEW_TOKENS_MULTIPLIER: float = float(os.environ.get("MAX_NEW_TOKENS_MULTIPLIER", "1.5"))
 MAX_INPUT_TOKENS: int = int(os.environ.get("MAX_INPUT_TOKENS", "512"))
 PUNCT_MODEL_DIR: str = os.environ.get("PUNCT_MODEL_DIR", str(Path(MODELS_DIR) / "rupunct-big-onnx"))
-HOST: str = os.environ.get("HOST", "0.0.0.0")
+HOST: str = os.environ.get("HOST", "127.0.0.1") 
 PORT: int = int(os.environ.get("PORT", "8501"))
 KEEPALIVE_IDLE_SECONDS: float = float(os.environ.get("KEEPALIVE_IDLE_SECONDS", "240"))

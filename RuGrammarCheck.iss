@@ -6,6 +6,10 @@
   #define RuGrammarCheckVersion "unknown"
 #endif
 
+#ifndef OutputBaseName
+  #define OutputBaseName "RuGrammarCheck-Setup"
+#endif
+
 [Setup]
 AppId={{BE32D788-8D76-46A7-9F33-429F2552E0BA}
 AppName={#RuGrammarCheckName}
@@ -14,7 +18,8 @@ AppPublisherURL={#RuGrammarCheckURL}
 AppSupportURL={#RuGrammarCheckURL}
 AppUpdatesURL={#RuGrammarCheckURL}
 DefaultDirName={commonappdata}\{#RuGrammarCheckName}
-DisableDirPage=no
+; Locked: hotkeys.ahk / clipboard scripts assume the default location.
+DisableDirPage=yes
 DisableProgramGroupPage=yes
 UninstallDisplayIcon={app}\{#RuGrammarCheckExeName}
 ArchitecturesAllowed=x64compatible
@@ -22,7 +27,7 @@ ArchitecturesInstallIn64BitMode=x64compatible
 PrivilegesRequired=admin
 SolidCompression=yes
 WizardStyle=modern
-OutputBaseFilename={#RuGrammarCheckName}-Setup
+OutputBaseFilename={#OutputBaseName}
 OutputDir=output
 
 [Languages]
@@ -74,55 +79,50 @@ begin
   HotkeyPage.Values[0] := True;
 end;
 
-procedure RunPs1(const ScriptName, Args: string);
+function RunPs1(const ScriptName, Args: string): Integer;
 var
   ResultCode: Integer;
   CmdLine: string;
 begin
   CmdLine := '-NoProfile -ExecutionPolicy Bypass -File "' +
              ExpandConstant('{app}\') + ScriptName + '" ' + Args;
-  ShellExec(
-    '',
-    'powershell.exe',
-    CmdLine,
-    '',
-    SW_HIDE,
-    ewWaitUntilTerminated,
-    ResultCode
-  );
+  if ShellExec('', 'powershell.exe', CmdLine, '', SW_HIDE, ewWaitUntilTerminated, ResultCode) then
+    Result := ResultCode
+  else
+    Result := -1;
 end;
 
 procedure CurStepChanged(CurStep: TSetupStep);
+var
+  Rc: Integer;
+  AppDir: string;
 begin
   if CurStep = ssPostInstall then
   begin
-    RunPs1(
-      'install-service.ps1',
-      '-InstallDir "' + ExpandConstant('{app}') + '"'
-    );
+    AppDir := ExpandConstant('{app}');
+
+    Rc := RunPs1('install-service.ps1', '-InstallDir "' + AppDir + '"');
+    if Rc <> 0 then
+      MsgBox('Service installation failed (code ' + IntToStr(Rc) + ').' + #13#10 +
+             'Check logs in ' + AppDir + '\logs\RuGrammarCheck.', mbError, MB_OK);
 
     if ShouldEnableHotkeys then
     begin
-      RunPs1(
-        'install-scripts\create-hotkeys.ps1',
-        '-InstallDir "' + ExpandConstant('{app}') + '"'
-      );
+      Rc := RunPs1('install-scripts\create-hotkeys.ps1', '-InstallDir "' + AppDir + '"');
+      if Rc <> 0 then
+        MsgBox('Hotkey setup failed (code ' + IntToStr(Rc) + '). The service still works ' +
+               'via the web UI.', mbInformation, MB_OK);
     end;
   end;
 end;
 
 procedure CurUninstallStepChanged(CurUninstallStep: TUninstallStep);
+var
+  Rc: Integer;
 begin
   if CurUninstallStep = usUninstall then
   begin
-    RunPs1(
-      'uninstall-service.ps1',
-      '-InstallDir "' + ExpandConstant('{app}') + '"'
-    );
-
-    RunPs1(
-      'install-scripts\remove-hotkeys.ps1',
-      '-InstallDir "' + ExpandConstant('{app}') + '"'
-    );
+    Rc := RunPs1('uninstall-service.ps1', '-InstallDir "' + ExpandConstant('{app}') + '"');
+    Rc := RunPs1('install-scripts\remove-hotkeys.ps1', '-InstallDir "' + ExpandConstant('{app}') + '"');
   end;
 end;

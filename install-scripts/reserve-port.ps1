@@ -10,12 +10,15 @@ finally {
     $listener.Stop()
 }
 
-Start-Process -FilePath "netsh.exe" -ArgumentList @(
+$netsh = Start-Process -FilePath "netsh.exe" -ArgumentList @(
     'int','ipv4','add','excludedportrange',
     'protocol=tcp',
     "startport=$port",
     'numberofports=1',
     'store=persistent'
-) -Wait -NoNewWindow
+) -Wait -NoNewWindow -PassThru
+if ($netsh.ExitCode -ne 0) {
+    throw "netsh failed to reserve port $port (exit $($netsh.ExitCode))."
+}
 
 Write-Output $port
