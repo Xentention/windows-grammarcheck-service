@@ -15,7 +15,6 @@ ENV HF_HOME=/root/.cache/huggingface
 ENV PYTHONUNBUFFERED=1
 
 COPY app/ ./app/
-COPY scripts/ ./scripts/
 
 ARG PORT=8501
 ENV PORT=${PORT}

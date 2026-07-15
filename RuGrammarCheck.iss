@@ -55,6 +55,16 @@ Source: "clipboard\*"; DestDir: "{app}\clipboard"; Flags: ignoreversion recurses
 ; AutoHotkey runtime (expanded at install time by create-hotkeys.ps1)
 Source: "ahk.zip"; DestDir: "{app}"; Flags: ignoreversion
 
+; Web UI launcher (resolves the dynamic port at click time)
+Source: "open-ui.vbs"; DestDir: "{app}"; Flags: ignoreversion
+
+[Tasks]
+Name: "desktopicon"; Description: "{cm:CreateDesktopIcon}"
+
+[Icons]
+Name: "{commonprograms}\{#RuGrammarCheckName}"; Filename: "{app}\open-ui.vbs"; IconFilename: "{app}\{#RuGrammarCheckExeName}"
+Name: "{commondesktop}\{#RuGrammarCheckName}"; Filename: "{app}\open-ui.vbs"; IconFilename: "{app}\{#RuGrammarCheckExeName}"; Tasks: desktopicon
+
 [Code]
 var
   HotkeyPage: TInputOptionWizardPage;
