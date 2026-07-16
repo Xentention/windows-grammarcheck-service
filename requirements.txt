@@ -1,0 +1,12 @@
+optimum[onnxruntime]==1.21.4
+transformers==4.42.4
+onnx==1.16.1
+onnxruntime==1.18.1
+
+flask==3.0.3
+waitress==3.0.0
+torch==2.3.1
+sentencepiece==0.2.0
+accelerate==0.31.0
+
+pywin32==306; sys_platform == "win32"

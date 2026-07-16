@@ -1,0 +1,131 @@
+<!doctype html>
+<html lang="ru">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title aria-hidden="true">Мой голос: Правописание</title>
+
+<link rel="icon" type="image/png" sizes="16x16" href="{{ url_for('static', filename='icons/icon16.png') }}">
+<link rel="icon" type="image/png" sizes="32x32" href="{{ url_for('static', filename='icons/icon32.png') }}">
+<link rel="icon" type="image/png" sizes="48x48" href="{{ url_for('static', filename='icons/icon48.png') }}">
+<link rel="apple-touch-icon" href="{{ url_for('static', filename='icons/icon256.png') }}">
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Lora:wght@500;600;700&family=Open+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+
+<link rel="stylesheet" href="{{ url_for('static', filename='css/variables.css') }}">
+<link rel="stylesheet" href="{{ url_for('static', filename='css/base.css') }}">
+<link rel="stylesheet" href="{{ url_for('static', filename='css/components.css') }}">
+<link rel="stylesheet" href="{{ url_for('static', filename='css/high-contrast.css') }}">
+</head>
+<body data-hc="off">
+
+<header class="app-header" aria-label="Заголовок страницы" title="Заголовок страницы">
+  <div class="header-inner">
+    <div class="logo-mark" aria-hidden="true">
+      <svg xmlns="http://www.w3.org/2000/svg" width="40" height="40" viewBox="0 0 20 20">
+        <path d="M0 0h20v20H0z" fill="none" />
+        <path fill="currentColor" d="M2.75 4.5a.75.75 0 0 0 0 1.5h14.5a.75.75 0 0 0 0-1.5zm0 3a.75.75 0 0 0 0 1.5h8.5a.75.75 0 0 0 0-1.5zm0 3a.75.75 0 0 0 0 1.5h6.633a1.5 1.5 0 0 1-.284-1.5zm0 3h6.628L7.876 15H2.75a.75.75 0 0 1 0-1.5m11.746-6.061a.5.5 0 0 0-.992 0l-.098.791a2.5 2.5 0 0 1-2.176 2.176l-.791.098a.5.5 0 0 0 0 .992l.791.098a2.5 2.5 0 0 1 2.176 2.176l.098.791a.5.5 0 0 0 .992 0l.098-.791a2.5 2.5 0 0 1 2.176-2.176l.791-.098a.5.5 0 0 0 0-.992l-.791-.098a2.5 2.5 0 0 1-2.176-2.176zm-2.643 5.708a.5.5 0 0 1 0 .707l-4 3.996a.5.5 0 0 1-.706-.707l3.999-3.997a.5.5 0 0 1 .707 0" />
+      </svg>
+    </div>
+    <div class="header-title" title="Мой голос: Правописание" tabindex="0">Мой голос: Правописание</div>
+    <div class="spacer" aria-hidden="true"></div>
+
+    <button type="button" id="hc-toggle" class="hc-toggle" aria-pressed="false" aria-label="Режим высокого контраста" title="Режим высокого контраста">
+      <svg class="icon-eye" data-icon-off xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" aria-hidden="true">
+        <path fill="currentColor" d="M12 9a3 3 0 0 0-3 3a3 3 0 0 0 3 3a3 3 0 0 0 3-3a3 3 0 0 0-3-3m0 8a5 5 0 0 1-5-5a5 5 0 0 1 5-5a5 5 0 0 1 5 5a5 5 0 0 1-5 5m0-12.5C7 4.5 2.73 7.61 1 12c1.73 4.39 6 7.5 11 7.5s9.27-3.11 11-7.5c-1.73-4.39-6-7.5-11-7.5"/>
+      </svg>
+      <svg class="icon-eye-slash" data-icon-on style="display:none" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" aria-hidden="true">
+        <path fill="currentColor" d="M11.83 9L15 12.16V12a3 3 0 0 0-3-3zm-4.3.8l1.55 1.55c-.05.21-.08.42-.08.65a3 3 0 0 0 3 3c.22 0 .44-.03.65-.08l1.55 1.55c-.67.33-1.41.53-2.2.53a5 5 0 0 1-5-5c0-.79.2-1.53.53-2.2M2 4.27l2.28 2.28l.45.45C3.08 8.3 1.78 10 1 12c1.73 4.39 6 7.5 11 7.5c1.55 0 3.03-.3 4.38-.84l.43.42L19.73 22L21 20.73L3.27 3M12 7a5 5 0 0 1 5 5c0 .64-.13 1.26-.36 1.82l2.93 2.93c1.5-1.25 2.7-2.89 3.43-4.75c-1.73-4.39-6-7.5-11-7.5c-1.4 0-2.74.25-4 .7l2.17 2.15C10.74 7.13 11.35 7 12 7"/>
+      </svg>
+    </button>
+
+    <div class="zoom-group" role="group">
+      <button type="button" id="zoom-dec" class="zoom-btn" aria-label="Уменьшить текст" title="Уменьшить текст">A−</button>
+      <span id="zoom-label" class="zoom-label" aria-live="polite">100%</span>
+      <button type="button" id="zoom-inc" class="zoom-btn" aria-label="Увеличить текст" title="Увеличить текст">A+</button>
+    </div>
+
+    <a class="github-link" href="https://github.com/Xentention/windows-grammarcheck-service" target="_blank" rel="noopener noreferrer" aria-label="Гитхаб" title="GitHub">
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" aria-hidden="true"><path fill="currentColor" d="M12 2A10 10 0 0 0 2 12c0 4.42 2.87 8.17 6.84 9.5c.5.08.66-.23.66-.5v-1.69c-2.77.6-3.36-1.34-3.36-1.34c-.46-1.16-1.11-1.47-1.11-1.47c-.91-.62.07-.6.07-.6c1 .07 1.53 1.03 1.53 1.03c.87 1.52 2.34 1.07 2.91.83c.09-.65.35-1.09.63-1.34c-2.22-.25-4.55-1.11-4.55-4.92c0-1.11.38-2 1.03-2.71c-.1-.25-.45-1.29.1-2.64c0 0 .84-.27 2.75 1.02c.79-.22 1.65-.33 2.5-.33s1.71.11 2.5.33c1.91-1.29 2.75-1.02 2.75-1.02c.55 1.35.2 2.39.1 2.64c.65.71 1.03 1.6 1.03 2.71c0 3.82-2.34 4.66-4.57 4.91c.36.31.69.92.69 1.85V21c0 .27.16.59.67.5C19.14 20.16 22 16.42 22 12A10 10 0 0 0 12 2"/></svg>
+    </a>
+  </div>
+</header>
+
+<main class="app-main" id="main-content">
+  <h1 class="page-title">Коррекция текста</h1>
+  <p id="sr-status" class="sr-only" aria-live="polite" aria-atomic="true"></p>
+
+  <section data-card class="card">
+    <span id="input-label" hidden> Введите текст для коррекции</span>
+    <textarea
+      id="input-text"
+      class="input-textarea"
+      placeholder="Введите текст..."
+      aria-labelledby="input-label"
+      spellcheck="false"
+      rows="1"
+    ></textarea>
+    <div data-panelhead class="panel-head">
+      <span data-dot class="panel-dot" aria-hidden="true"></span>
+      <span id="input-panel-label" class="panel-label">Ввод</span>
+      <div class="spacer" aria-hidden="true"></div>
+      <button type="button" id="correct-btn" data-primary class="primary-btn" aria-label="Исправить" disabled>
+        <span id="correct-spinner" class="btn-spinner"  aria-hidden="true" hidden></span>
+        <span id="correct-label" aria-hidden="true">Исправить</span>
+      </button>
+      <button type="button" id="clear-btn" data-icon class="icon-btn" aria-label="Очистить" title="Очистить">
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" aria-hidden="true"><path fill="currentColor" d="M10 5h4a2 2 0 1 0-4 0M8.5 5a3.5 3.5 0 1 1 7 0h5.75a.75.75 0 0 1 0 1.5h-1.32l-1.17 12.111A3.75 3.75 0 0 1 15.026 22H8.974a3.75 3.75 0 0 1-3.733-3.389L4.07 6.5H2.75a.75.75 0 0 1 0-1.5zm2 4.75a.75.75 0 0 0-1.5 0v7.5a.75.75 0 0 0 1.5 0zM14.25 9a.75.75 0 0 0-.75.75v7.5a.75.75 0 0 0 1.5 0v-7.5a.75.75 0 0 0-.75-.75"/></svg>
+      </button>
+    </div>
+  </section>
+
+<div id="error-card" data-error class="error-card" role="alert" hidden>
+  <strong>Ошибка запроса.</strong> <span id="error-text"></span>
+</div>
+
+  <div class="output-wrap">
+    <section data-card class="card">
+      <div id="output-body" class="output-body" aria-labelledby="output-panel-label" aria-live="off" aria-atomic="true"></div>
+      <div data-panelhead class="panel-head">
+        <span data-dot class="panel-dot" aria-hidden="true"></span>
+        <span id="output-panel-label" class="panel-label">Вывод</span>
+        <div class="spacer" aria-hidden="true"></div>
+        <button type="button" id="copy-btn" data-icon class="icon-btn" disabled aria-label="Копировать" title="Копировать">
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" aria-hidden="true">
+            <path fill="currentColor" d="M5.503 4.627L5.5 6.75v10.504a3.25 3.25 0 0 0 3.25 3.25h8.616a2.25 2.25 0 0 1-2.122 1.5H8.75A4.75 4.75 0 0 1 4 17.254V6.75c0-.98.627-1.815 1.503-2.123M13.128 2c.597 0 1.17.237 1.592.66l4.618 4.62c.422.422.659.995.659 1.591v8.383a2.25 2.25 0 0 1-2.25 2.25H8.752a2.25 2.25 0 0 1-2.25-2.25V4.25A2.25 2.25 0 0 1 8.752 2zM13 3.5H8.752a.75.75 0 0 0-.75.75v13.004c0 .414.336.75.75.75h8.995a.75.75 0 0 0 .75-.75V9.003H15.25a2.25 2.25 0 0 1-2.245-2.095L13 6.754zm1.5 1.061l.001 2.193c0 .38.282.693.648.743l.102.007l2.19-.001z"/>
+          </svg>
+        </button>
+        <button type="button" id="read-output-btn" class="icon-btn read-output-btn" aria-label="Прослушать результат"  title="Прослушать результат" disabled>
+          <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24">
+            <path fill="currentColor" d="M19 11.975q0-2.075-1.1-3.787t-2.95-2.563q-.375-.175-.55-.537t-.05-.738q.15-.4.538-.575t.787 0Q18.1 4.85 19.55 7.063T21 11.974t-1.45 4.913t-3.875 3.287q-.4.175-.788 0t-.537-.575q-.125-.375.05-.737t.55-.538q1.85-.85 2.95-2.562t1.1-3.788M7 15H4q-.425 0-.712-.288T3 14v-4q0-.425.288-.712T4 9h3l3.3-3.3q.475-.475 1.088-.213t.612.938v11.15q0 .675-.612.938T10.3 18.3zm9.5-3q0 1.05-.475 1.988t-1.25 1.537q-.25.15-.513.013T14 15.1V8.85q0-.3.263-.437t.512.012q.775.625 1.25 1.575t.475 2" />
+          </svg>
+        </button>
+      </div>
+    </section>
+    <p id="elapsed-time" class="elapsed-time" aria-live="off" aria-atomic="true" hidden></p>
+  </div>
+
+  <section class="mv-gec-info" tabindex="0" aria-labelledby="gec-info-title">
+
+    <button type="button" class="gec-info-focus" hidden>Подробнее о работе</button>
+
+    <h2 id="gec-info-title">Как обрабатывается текст?</h2>
+    <p class="mv-gec-info-text">
+      &emsp;Сначала текст поабзацно обрабатывается моделью <strong>sage-fredt5-large</strong>. Это модель типа "из последовательности в последовательность",
+      обученная специально для исправления орфографии русского языка. На этом этапе исправляется большинство обнаруженных моделью ошибок.
+    </p>
+    <p class="mv-gec-info-text">
+      &emsp;На следующем этапе текст проходит повторную обработку с помощью легковесной <strong>RUPunct_big</strong>. Здесь дополнительно размечается пунктуация,
+      чтобы покрыть случаи, упущенные во время первой обработки.
+    </p>
+    <p class="mv-gec-info-text">
+      &emsp;Вся обработка выполняется локально на процессоре. Данные никуда не передаются.
+    </p>
+  </section>
+</main>
+
+<script type="module" src="{{ url_for('static', filename='js/main.js') }}"></script>
+</body>
+</html>

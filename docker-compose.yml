@@ -1,0 +1,19 @@
+services:
+  web:
+    build:
+      context: .
+      args:
+        PORT: ${PORT:-8501}
+    ports:
+      - "${PORT:-8501}:${PORT:-8501}"
+    environment:
+      PORT: ${PORT:-8501}
+      MODELS_DIR: /models
+      SAGE_QUANT: ${SAGE_QUANT:-int8}
+    volumes:
+      - onnx-models:/models:ro
+    restart: unless-stopped
+
+volumes:
+  hf-cache:
+  onnx-models:

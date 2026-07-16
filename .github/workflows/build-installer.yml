@@ -1,0 +1,137 @@
+name: Build RuGrammarCheck Installer
+
+on:
+  workflow_dispatch:
+  push:
+    tags:
+      - 'v*'
+
+permissions:
+  contents: write
+
+jobs:
+  build:
+    runs-on: windows-2025
+    timeout-minutes: 60
+    strategy:
+      matrix:
+        quant: [int4, int8]
+
+    steps:
+      - name: Check out repo
+        uses: nschloe/action-cached-lfs-checkout@v1
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+
+      - name: Install dependencies
+        run: |
+          pip install --no-cache-dir -r requirements-frozen.txt
+          pip install pyinstaller
+
+      - name: Prepare .env
+        shell: pwsh
+        run: |
+          $quant = "${{ matrix.quant }}"
+          @(
+            "SAGE_QUANT=$quant"
+          ) -join "`n" | Set-Content -Path .env
+
+      - name: Build exe
+        shell: cmd
+        run: |
+          pyinstaller --name RuGrammarCheck --onedir --console ^
+            --collect-all onnxruntime ^
+            --exclude-module tkinter ^
+            --icon "icons/app.ico" ^
+            --add-data "models/sage-fredt5-large-onnx-${{ matrix.quant }};models/sage-fredt5-large-onnx-${{ matrix.quant }}" ^
+            --add-data "models/rupunct-big-onnx;models/rupunct-big-onnx" ^
+            --add-data "app/templates;app/templates" ^
+            --add-data "app/static;app/static" ^
+            launcher.py
+
+      - name: Copy root files
+        shell: pwsh
+        run: |
+          Copy-Item LICENSE, README.md, .env -Destination dist\RuGrammarCheck\
+          Copy-Item install-service.ps1, uninstall-service.ps1 -Destination dist\RuGrammarCheck\
+
+      - name: Bundle NSSM
+        shell: pwsh
+        run: |
+          Expand-Archive nssm.zip -DestinationPath nssm_extracted
+          Copy-Item nssm_extracted\nssm-2.24-101-g897c7ad\win64\nssm.exe -Destination dist\RuGrammarCheck\nssm.exe
+
+      - name: Copy installation scripts
+        shell: pwsh
+        run: |
+          $src = "install-scripts"
+          $dst = "dist\RuGrammarCheck\install-scripts"
+
+          if (Test-Path $src) {
+            Get-ChildItem -Path $src -Recurse -File | ForEach-Object {
+              $relPath = $_.FullName.Substring((Resolve-Path $src).Path.Length).TrimStart('\')
+              $destFile = Join-Path $dst $relPath
+              $destDir  = Split-Path $destFile -Parent
+
+              if ($destDir -and (Test-Path $destDir -PathType Container) -eq $false) {
+                New-Item -ItemType Directory -Force -Path $destDir | Out-Null
+              }
+
+              Copy-Item -LiteralPath $_.FullName -Destination $destFile -Force
+            }
+          }
+
+      - name: Copy clipboard scripts
+        shell: pwsh
+        run: |
+          $src     = "clipboard"
+          $dstClip = "dist\RuGrammarCheck\clipboard"
+
+          if (Test-Path $src) {
+            Get-ChildItem -Path $src -Recurse -File | ForEach-Object {
+              $relPath = $_.FullName.Substring((Resolve-Path $src).Path.Length).TrimStart('\')
+              $destFile = Join-Path $dstClip $relPath
+              $destDir  = Split-Path $destFile -Parent
+              if ($destDir -and (Test-Path $destDir -PathType Container) -eq $false) {
+                New-Item -ItemType Directory -Force -Path $destDir | Out-Null
+              }
+              Copy-Item -LiteralPath $_.FullName -Destination $destFile -Force
+            }
+          }
+      
+      - name: Derive version from tag
+        id: version
+        shell: pwsh
+        run: |
+          $tag = "${{ github.ref_name }}"
+          if ("${{ github.ref_type }}" -eq "tag" -and $tag -match "^v(.*)$") {
+            $version = $Matches[1]
+          } else {
+            $version = "unknown"
+          }
+          echo "version=$version" >> $env:GITHUB_OUTPUT
+
+      - name: Build Inno Setup installer
+        uses: Minionguyjpro/Inno-Setup-Action@v1.2.2
+        with:
+          path: RuGrammarCheck.iss
+          options: "/O+ /DRuGrammarCheckVersion=${{ steps.version.outputs.version }} /DOutputBaseName=RuGrammarCheck-Setup-${{ matrix.quant }}"
+
+      - name: Upload installer artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: RuGrammarCheck-installer-${{ matrix.quant }}
+          path: output/RuGrammarCheck-Setup-${{ matrix.quant }}.exe
+          if-no-files-found: error
+
+      # Only runs when triggered by a version tag
+      - name: Publish GitHub Release
+        if: github.ref_type == 'tag'
+        uses: softprops/action-gh-release@v3
+        with:
+          tag_name: ${{ github.ref_name }}
+          files: output/RuGrammarCheck-Setup-${{ matrix.quant }}.exe
+          generate_release_notes: true
