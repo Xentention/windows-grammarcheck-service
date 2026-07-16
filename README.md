@@ -68,8 +68,8 @@
 
 | Сборка                   | Ссылка                                                                                                                                                 | Когда выбирать                                                      |
 | ------------------------ | ------------------------------------------------------------------------------------------------------------------------------------------------------ | ------------------------------------------------------------------- |
-| **INT8** (рекомендуется) | [**RuGrammarCheck-Setup-int8.exe**](https://github.com/Xentention/windows-grammarcheck-service/releases/latest/download/RuGrammarCheck-Setup-int8.exe) | Выше качество исправлений. Значение по умолчанию.                   |
-| **INT4**                 | [**RuGrammarCheck-Setup-int4.exe**](https://github.com/Xentention/windows-grammarcheck-service/releases/latest/download/RuGrammarCheck-Setup-int4.exe) | Меньше размер и требования к памяти, чуть быстрее — ценой качества. |
+| **INT8** (рекомендуется) | [**RuGrammarCheck-Setup-int8.exe**](https://github.com/Xentention/windows-grammarcheck-service/releases/download/v0.0.1/RuGrammarCheck-Setup-int8.exe) | Выше качество исправлений. Значение по умолчанию.                   |
+| **INT4**                 | [**RuGrammarCheck-Setup-int4.exe**](https://github.com/Xentention/windows-grammarcheck-service/releases/download/v0.0.1/RuGrammarCheck-Setup-int4.exe) | Меньше размер и требования к памяти, чуть быстрее — ценой качества. |
 
 Ссылки выше всегда ведут на **последний релиз**. Все версии и примечания к
 выпускам — на странице
