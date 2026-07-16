@@ -50,6 +50,7 @@ jobs:
             --add-data "models/rupunct-big-onnx;models/rupunct-big-onnx" ^
             --add-data "app/templates;app/templates" ^
             --add-data "app/static;app/static" ^
+            --add-data ".env;." ^
             launcher.py
 
       - name: Copy root files
