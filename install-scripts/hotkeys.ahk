@@ -1,7 +1,6 @@
 ; hotkeys.ahk
 #Requires AutoHotkey v2.0
 #SingleInstance Force
-#NoEnv
 
 ; Resolve directory where the installer put the scripts
 InstallDir := "C:\ProgramData\RuGrammarCheck\clipboard"
@@ -10,10 +9,12 @@ RevertVbs  := InstallDir "\revert-clipboard.vbs"
 
 ; Correct: Ctrl+Win+Shift+Alt+C
 ^#+!c::
-    Run '"' CorrectVbs '"', , "Hide"
-    return
+{
+    Run('"' CorrectVbs '"', , "Hide")
+}
 
-; Revert: Ctrl+Shift+Alt+Z
-^+!z::
-    Run '"' RevertVbs '"', , "Hide"
-    return
+; Revert: Ctrl+Win+Shift+Alt+Z
+^#+!z::
+{
+    Run('"' RevertVbs '"', , "Hide")
+}
