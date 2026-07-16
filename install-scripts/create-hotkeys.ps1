@@ -6,7 +6,7 @@ param(
 Set-StrictMode -Version Latest
 $ErrorActionPreference = 'Stop'
 
-$ahkSource = Join-Path $InstallDir 'hotkeys.ahk'
+$ahkSource = Join-Path $InstallDir 'install-scripts\hotkeys.ahk'
 $ahkDir    = Join-Path $env:LOCALAPPDATA 'RuGrammarCheck'
 $ahkExe    = Join-Path $ahkDir 'AutoHotkey64.exe'
 $ahkScript = Join-Path $ahkDir 'hotkeys.ahk'

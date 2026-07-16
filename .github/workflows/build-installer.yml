@@ -36,9 +36,6 @@ jobs:
         run: |
           $quant = "${{ matrix.quant }}"
           @(
-            "MODELS_DIR=models",
-            "ONNX_MODEL_DIR=models/sage-fredt5-large-onnx",
-            "PUNCT_MODEL_DIR=models/rupunct-big-onnx",
             "SAGE_QUANT=$quant"
           ) -join "`n" | Set-Content -Path .env
 
@@ -49,14 +46,17 @@ jobs:
             --collect-all onnxruntime ^
             --exclude-module tkinter ^
             --icon "icons/app.ico" ^
-            --add-data "LICENSE;." ^
-            --add-data "README.md;." ^
-            --add-data ".env;." ^
-            --add-data "models/sage-fredt5-large-onnx-${{ matrix.quant }};models/sage-fredt5-large-onnx" ^
+            --add-data "models/sage-fredt5-large-onnx-${{ matrix.quant }};models/sage-fredt5-large-onnx-${{ matrix.quant }}" ^
             --add-data "models/rupunct-big-onnx;models/rupunct-big-onnx" ^
             --add-data "app/templates;app/templates" ^
             --add-data "app/static;app/static" ^
             launcher.py
+
+      - name: Copy root files
+        shell: pwsh
+        run: |
+          Copy-Item LICENSE, README.md, .env -Destination dist\RuGrammarCheck\
+          Copy-Item install-service.ps1, uninstall-service.ps1 -Destination dist\RuGrammarCheck\
 
       - name: Bundle NSSM
         shell: pwsh

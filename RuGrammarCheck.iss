@@ -44,14 +44,8 @@ ru.HotkeyPageDesc=Привязать Ctrl+Win+Shift+Alt+C и Ctrl+Shift+Alt+Z к
 ru.HotkeyOpt=Включить горячие клавиши
 
 [Files]
-; Build from PyInstaller (includes both model folders)
+; Build from PyInstaller
 Source: "dist\RuGrammarCheck\*"; DestDir: "{app}"; Flags: ignoreversion recursesubdirs createallsubdirs
-
-; Install scripts (root: install-service.ps1, uninstall-service.ps1, etc.)
-Source: "install-scripts\*"; DestDir: "{app}"; Flags: ignoreversion recursesubdirs createallsubdirs
-
-; Clipboard scripts
-Source: "clipboard\*"; DestDir: "{app}\clipboard"; Flags: ignoreversion recursesubdirs createallsubdirs
 
 ; AutoHotkey runtime (expanded at install time by create-hotkeys.ps1)
 Source: "ahk.zip"; DestDir: "{app}"; Flags: ignoreversion
